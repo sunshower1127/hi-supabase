@@ -3,13 +3,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { PostgrestError } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { Todo } from "../model";
 
 async function sendCommand(
-  command: (supabase: ReturnType<typeof createClient>) => PromiseLike<{ data: Todo[] | null; error: PostgrestError | null }>
+  command: (supabase: Awaited<ReturnType<typeof createClient>>) => PromiseLike<{ data: Todo[] | null; error: PostgrestError | null }>
 ) {
-  const supabase = createClient(await cookies());
+  const supabase = await createClient();
   const { data: todos, error } = await command(supabase);
   if (error) {
     console.error("Error fetching todos:", error);
